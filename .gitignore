@@ -1,0 +1,4 @@
+.vs
+build/bin
+build/obj
+build/build.njsproj.user
