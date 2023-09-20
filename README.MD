@@ -1,65 +1,57 @@
-## Rest API vs Socket API
+# bliteTS
+bliteTS is an open-source, browser-platform JavaScript runtime. The main target of bliteTS is Edge/Chrome extension. Blite is not compatible with NodeJs runtime.
 
-```
-Market Data Endpoints
-☀ GET /api/v3/exchangeInfo             exchangeInfo ✔
-   GET /api/v3/depth                    depth
-   GET /api/v3/trades
-   GET /api/v3/historicalTrades
-   GET /api/v3/aggTrades
-☀ GET /api/v3/klines                   klines  
-   GET /api/v3/avgPrice
-   GET /api/v3/ticker/24hr
-   GET /api/v3/ticker/price
-   GET /api/v3/ticker/bookTicker
-   GET /api/v3/ticker
-```
-
-```
-Account Trade Endpoints
-☀ POST /api/v3/order/test              order.test
-☀ GET /api/v3/order                    order.status            Query Order (USER_DATA)
-☀ POST /api/v3/order                   order.place
-☀ DELETE /api/v3/order                 order.cancel
-   POST /api/v3/order/cancelReplace     order.cancelReplace     Cancel an Existing Order and Send a New Order
-   GET /api/v3/allOrders                allOrders
-   GET /api/v3/openOrders               openOrders.status
-   DELETE /api/v3/openOrders            openOrders.cancelAll    Cancel all Open Orders on a Symbol
-   POST /api/v3/order/oco
-
-```
-
-```
-User Data Streams
-☀ POST /api/v3/userDataStream
-☀ PUT /api/v3/userDataStream
-☀ DELETE /api/v3/userDataStream
-```
+# Targeted Features
+✅ Spot  
+❌ Margin  
+✅ USD-M Future  
+❌ COIN-M Future  
 
 ## Namespace Structure
 ```ts
 {} blite
+├──⚡ buildQueryString(object, bool): string
+├──⚡ HMACSHA256(apiSecret: string, message: string): Promise<string>
 ├──🔩 environments
 │  ├── testnet
 │  └── live
 ├──📦 ApiCredentials(string, string)
+│  ├──⚡ sign(object): Promise<object>
+│  └──⚡ signQuery(object): Promise<string>
 ├──{} spot
-│  ├──📦 Account
 │  ├──📦 BliteClient
 │  │   ├──🔒 market: BliteClientMarket 
-│  │   └──🔒 order: BliteClientOrder
+│  │   │  ├──⚡ exchangeInfo(string[]?)
+│  │   │  └──⚡ getKlines(string, KlineInterval, number, number, number)
+│  │   ├──🔒 account: BliteClientAccount 
+│  │   │  ├──⚡ startUserStream(ApiCredentials)
+│  │   │  ├──⚡ keepAliveUserStream(string, ApiCredentials)
+│  │   │  └──⚡ stopUserStreamAsync(string, ApiCredentials)
+│  │   ├──🔒 order: BliteClientOrder
+│  │   └──🔒 stream: BliteClientStream
+├──{} future
+│  ├──📦 BliteFutureClient
+│  │   ├──🔒 market
+│  │   │  ├──⚡ bookTicker
+│  │   │  ├──⚡ exchangeInfo
+│  │   │  ├──⚡ klines
+│  │   │  └──⚡ premiumIndex
+│  │   ├──🔒 account
+│  │   │  ├──⚡ account
+│  │   │  ├──⚡ balance
+│  │   │  ├──⚡ getPositionInfo
+│  │   │  ├──⚡ startUserStream
+│  │   │  ├──⚡ keepAliveUserStream
+│  │   │  └──⚡ stopUserStreamAsync
+│  │   ├──🔒 order
+│  │   │  └──⚡ new
+│  │   ├──🔒 stream
+│  │   │  ├──⚡ subscribeToBookTicker/unsubscribeToBookTicker
+│  │   │  ├──⚡ subscribeToKline/unsubscribeToKline
+│  │   │  └──⚡ subscribeToUserData/unsubscribeToUserData
 ```
 
-Environment  
-  ↓  
-BliteClient  
-  ↓  
-Account  
+## Socket API & Rest API
+Blite will use the most latest available feature that is supported by Binance. Spot endpoint will use websocket while margin/future will use rest api.
 
-```
-├──🌟 Environment
-│  ├──🌟 BliteClient
-│  │  ├──🌟 Account
-         ├──⚡
-```
 
